@@ -2,6 +2,9 @@
 
 Web app quản lý tài chính cá nhân được xây dựng bằng Vue 3 và CoreUI giúp người dùng theo dõi thu nhập và chi phí
 
+<img src="./photos/1.jpg" />
+<img src="./photos/2.jpg" />
+
 ## Chức năng
 
 - Offline 100%

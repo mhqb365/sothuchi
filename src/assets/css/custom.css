@@ -1,3 +1,13 @@
+* {
+  -webkit-tap-highlight-color: transparent;
+  -webkit-touch-callout: none;
+}
+
+html,
+body {
+  touch-action: manipulation; /* ngăn double-tap zoom */
+}
+
 .cursor {
   cursor: pointer;
 }

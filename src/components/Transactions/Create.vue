@@ -148,12 +148,6 @@ const transactionForm = ref({
   ...getCurrentDateTime(),
 });
 
-function formatCurrency(event) {
-  let value = event.target.value.replace(/[^0-9]/g, ""); // chỉ giữ số
-  rawValue.value = value;
-  formatted.value = value ? Number(value).toLocaleString("vi-VN") : "";
-}
-
 const filteredCategories = computed(() => {
   const filtered = store.categories.filter(
     (cat) => cat.type === transactionForm.value.type

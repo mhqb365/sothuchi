@@ -17,10 +17,10 @@
 import { ref, onMounted } from "vue";
 import { useStore } from "@/stores";
 import SplashScreen from "@/components/SplashScreen.vue";
+import HeadMenu from "@/components/Menus/Head.vue";
+import BottomMenu from "@/components/Menus/Bottom.vue";
 import Toast from "@/components/Toast.vue";
-import BottomMenu from "@/components/BottomMenu.vue";
-import CreateTransaction from "@/components/CreateTransaction.vue";
-import HeadMenu from "@/components/HeadMenu.vue";
+import CreateTransaction from "@/components/Transactions/Create.vue";
 
 const store = useStore();
 const loading = ref(true);
@@ -30,7 +30,7 @@ onMounted(async () => {
   await store.initialize();
   setTimeout(() => {
     loading.value = false;
-  }, 500);
+  }, 1000);
 });
 </script>
 
@@ -51,7 +51,7 @@ onMounted(async () => {
 
 @media (max-width: 768px) {
   .main-content {
-    padding-bottom: 60px; /* Slightly more padding on mobile if needed */
+    padding-bottom: 60px;
   }
 }
 </style>

@@ -1,6 +1,6 @@
 <template>
   <CDropdown>
-    <CDropdownToggle color="primary">
+    <CDropdownToggle color="light">
       {{ selectedLabel }}
     </CDropdownToggle>
     <CDropdownMenu>
@@ -37,11 +37,27 @@ const dateOptions = [
     }),
   },
   {
+    label: "Hôm qua",
+    value: "yesterday",
+    getRange: () => ({
+      start: moment().subtract(1, "days").startOf("day"),
+      end: moment().subtract(1, "days").endOf("day"),
+    }),
+  },
+  {
     label: "Tuần này",
     value: "thisWeek",
     getRange: () => ({
       start: moment().startOf("week"),
       end: moment().endOf("week"),
+    }),
+  },
+  {
+    label: "Tuần trước",
+    value: "lastWeek",
+    getRange: () => ({
+      start: moment().subtract(1, "weeks").startOf("week"),
+      end: moment().subtract(1, "weeks").endOf("week"),
     }),
   },
   {
@@ -53,6 +69,14 @@ const dateOptions = [
     }),
   },
   {
+    label: "Tháng trước",
+    value: "lastMonth",
+    getRange: () => ({
+      start: moment().subtract(1, "months").startOf("month"),
+      end: moment().subtract(1, "months").endOf("month"),
+    }),
+  },
+  {
     label: "Quý này",
     value: "thisQuarter",
     getRange: () => ({
@@ -61,11 +85,27 @@ const dateOptions = [
     }),
   },
   {
+    label: "Quý trước",
+    value: "lastQuarter",
+    getRange: () => ({
+      start: moment().subtract(1, "quarters").startOf("quarter"),
+      end: moment().subtract(1, "quarters").endOf("quarter"),
+    }),
+  },
+  {
     label: "Năm nay",
     value: "thisYear",
     getRange: () => ({
       start: moment().startOf("year"),
       end: moment().endOf("year"),
+    }),
+  },
+  {
+    label: "Năm trước",
+    value: "lastYear",
+    getRange: () => ({
+      start: moment().subtract(1, "years").startOf("year"),
+      end: moment().subtract(1, "years").endOf("year"),
     }),
   },
 ];

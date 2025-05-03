@@ -1,7 +1,7 @@
 <template>
   <div class="splash-screen">
     <div class="loader">
-      <img :src="splash" alt="splash" width="120px" />
+      <img :src="splash" alt="splash" width="100px" class="logo" />
     </div>
   </div>
 </template>
@@ -19,5 +19,9 @@ import splash from "@/assets/logo.png";
   align-items: center;
   justify-content: center;
   z-index: 9999;
+}
+
+.logo {
+  border-radius: 20%;
 }
 </style>

@@ -3,20 +3,21 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="mb-0">Giao Dịch</h4>
       <div class="d-flex align-items-center">
-        <DateRangeDropdown
+        <DateRange
           class="me-2"
           @range-selected="handleDateRangeChange"
           defaultValue="thisMonth"
         />
         <CButton
           color="primary"
-          class="me-2"
+          class="me-2 d-none d-md-block"
           @click="showTransactionModal = true"
-          >Thêm Giao Dịch</CButton
         >
-        <CButton color="success" @click="showTransferModal = true"
-          >Chuyển Khoản</CButton
-        >
+          Thêm Giao Dịch
+        </CButton>
+        <CButton color="success" @click="showTransferModal = true">
+          Chuyển Khoản
+        </CButton>
       </div>
     </div>
 
@@ -100,10 +101,10 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "@/stores";
-import DateRangeDropdown from "@/components/DateRangeDropdown.vue";
-import Transfer from "@/components/Transfer.vue";
-import EditTransaction from "@/components/EditTransaction.vue";
-import CreateTransaction from "@/components/CreateTransaction.vue";
+import DateRange from "@/components/DateRange.vue";
+import CreateTransaction from "@/components/Transactions/Create.vue";
+import EditTransaction from "@/components/Transactions/Edit.vue";
+import Transfer from "@/components/Transactions/Transfer.vue";
 import moment from "moment";
 
 const store = useStore();

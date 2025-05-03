@@ -2,7 +2,7 @@
   <div class="container-lg py-4">
     <h4 class="mb-4">Tổng Quan</h4>
 
-    <DateRangeDropdown
+    <DateRange
       ref="dateRangeRef"
       class="mb-3"
       default-value="thisMonth"
@@ -50,7 +50,7 @@
 <script setup>
 import { computed, ref } from "vue";
 import { useStore } from "@/stores";
-import DateRangeDropdown from "@/components/DateRangeDropdown.vue";
+import DateRange from "@/components/DateRange.vue";
 import moment from "moment";
 
 const store = useStore();

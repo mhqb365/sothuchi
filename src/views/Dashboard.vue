@@ -1,13 +1,15 @@
 <template>
   <div class="container-lg py-4">
-    <h4 class="mb-4">Tổng Quan</h4>
-
-    <DateRange
-      ref="dateRangeRef"
-      class="mb-3"
-      default-value="thisMonth"
-      @range-selected="handleRangeSelected"
-    />
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h4 class="mb-0">Tổng Quan</h4>
+      <div class="d-flex align-items-center">
+        <DateRange
+          ref="dateRangeRef"
+          default-value="thisMonth"
+          @range-selected="handleRangeSelected"
+        />
+      </div>
+    </div>
 
     <div class="row g-4">
       <!-- Total Balance -->

@@ -1,10 +1,5 @@
 <template>
-  <CModal
-    alignment="center"
-    backdrop="static"
-    :visible="visible"
-    @close="onClose"
-  >
+  <CModal backdrop="static" :visible="visible" @close="onClose">
     <CModalHeader>
       <CModalTitle>
         {{ form.type === "transfer" ? "Sửa Chuyển Khoản" : "Sửa Giao Dịch" }}
@@ -94,6 +89,32 @@
             v-model.number="form.amount"
             required
           />
+          <div class="mt-2 d-md-none">
+            <CButton
+              class="me-2"
+              size="sm"
+              color="danger"
+              @click="backspaceAmount"
+            >
+              ⌫
+            </CButton>
+            <CButton
+              size="sm"
+              color="secondary"
+              class="me-2"
+              @click="form.amount = form.amount * 1000"
+            >
+              .000
+            </CButton>
+            <CButton
+              size="sm"
+              color="secondary"
+              class="me-2"
+              @click="form.amount = form.amount * 1000000"
+            >
+              .000.000
+            </CButton>
+          </div>
         </div>
         <div class="mb-3 d-flex">
           <CFormInput
@@ -117,17 +138,6 @@
 import { ref, computed, watch } from "vue";
 import { useStore } from "@/stores";
 import moment from "moment";
-import {
-  CModal,
-  CModalHeader,
-  CModalTitle,
-  CModalBody,
-  CModalFooter,
-  CButton,
-  CForm,
-  CFormSelect,
-  CFormInput,
-} from "@coreui/vue";
 
 const props = defineProps({
   visible: Boolean,
@@ -144,7 +154,7 @@ const form = ref({
   categoryId: "",
   fromAccount: "",
   toAccount: "",
-  amount: 0,
+  amount: "",
   description: "",
   dateInput: "",
   timeInput: "",
@@ -218,6 +228,13 @@ const handleSubmit = async () => {
   } catch (error) {
     console.error("Error in handleSubmit:", error);
     alert(error.message);
+  }
+};
+
+const backspaceAmount = () => {
+  if (form.value.amount) {
+    const str = form.value.amount.toString();
+    form.value.amount = str.length > 1 ? Number(str.slice(0, -1)) : 0;
   }
 };
 </script>

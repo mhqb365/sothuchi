@@ -1,6 +1,5 @@
 <template>
   <CModal
-    alignment="center"
     backdrop="static"
     :visible="modelValue"
     @close="$emit('update:modelValue', false)"
@@ -57,6 +56,32 @@
             v-model.number="transactionForm.amount"
             required
           />
+          <div class="mt-2 d-md-none">
+            <CButton
+              class="me-2"
+              size="sm"
+              color="danger"
+              @click="backspaceAmount"
+            >
+              ⌫
+            </CButton>
+            <CButton
+              size="sm"
+              color="secondary"
+              class="me-2"
+              @click="transactionForm.amount = transactionForm.amount * 1000"
+            >
+              .000
+            </CButton>
+            <CButton
+              size="sm"
+              color="secondary"
+              class="me-2"
+              @click="transactionForm.amount = transactionForm.amount * 1000000"
+            >
+              .000.000
+            </CButton>
+          </div>
         </div>
         <div class="mb-3">
           <CFormInput
@@ -118,10 +143,16 @@ const transactionForm = ref({
   type: "expense",
   accountId: store.accounts[0]?.id?.toString() || "",
   categoryId: getDefaultCategoryId("expense"),
-  amount: 0,
+  amount: "",
   description: "",
   ...getCurrentDateTime(),
 });
+
+function formatCurrency(event) {
+  let value = event.target.value.replace(/[^0-9]/g, ""); // chỉ giữ số
+  rawValue.value = value;
+  formatted.value = value ? Number(value).toLocaleString("vi-VN") : "";
+}
 
 const filteredCategories = computed(() => {
   const filtered = store.categories.filter(
@@ -179,6 +210,14 @@ const handleTransactionSubmit = async () => {
   } catch (error) {
     console.error("Error in handleTransactionSubmit:", error);
     alert(error.message);
+  }
+};
+
+const backspaceAmount = () => {
+  if (transactionForm.value.amount) {
+    const str = transactionForm.value.amount.toString();
+    transactionForm.value.amount =
+      str.length > 1 ? Number(str.slice(0, -1)) : 0;
   }
 };
 </script>

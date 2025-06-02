@@ -2,7 +2,9 @@
   <div class="container-lg py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="mb-0">Danh Mục</h4>
-      <CButton color="primary" @click="showModal = true">Thêm Danh Mục</CButton>
+      <CButton color="primary" @click="openCategoryModal()">
+        Thêm Danh Mục</CButton
+      >
     </div>
 
     <CCard v-for="category in store.categories" :key="category.id" class="mb-3">
@@ -20,7 +22,7 @@
               variant="ghost"
               size="sm"
               class="me-2"
-              @click="handleEdit(category)"
+              @click="openCategoryModal(category)"
             >
               Sửa
             </CButton>
@@ -28,7 +30,7 @@
               color="danger"
               variant="ghost"
               size="sm"
-              @click="handleDelete(category.id)"
+              @click="confirmDelete(category)"
             >
               Xóa
             </CButton>
@@ -37,61 +39,63 @@
       </CCardBody>
     </CCard>
 
-    <!-- Add Category Modal -->
-    <CModal :visible="showModal" @close="showModal = false">
+    <!-- Category Modal (Add/Edit) -->
+    <CModal
+      backdrop="static"
+      :visible="showCategoryModal"
+      @close="showCategoryModal = false"
+    >
       <CModalHeader>
-        <CModalTitle>Thêm Danh Mục</CModalTitle>
+        <CModalTitle>{{
+          isEditMode ? "Sửa Danh Mục" : "Thêm Danh Mục"
+        }}</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <CForm @submit.prevent="handleSubmit">
-          <div class="mb-3">
-            <CFormInput label="Tên Danh Mục" v-model="form.name" required />
-          </div>
-          <div class="mb-3">
-            <CFormSelect
-              label="Loại"
-              v-model="form.type"
-              :options="[
-                { label: 'Thu Nhập', value: 'income' },
-                { label: 'Chi Tiêu', value: 'expense' },
-              ]"
-              required
-            />
-          </div>
+        <CForm @submit.prevent="handleCategorySubmit">
+          <CFormInput
+            class="mb-3"
+            label="Tên Danh Mục"
+            v-model="categoryForm.name"
+            required
+          />
+          <CFormSelect
+            label="Loại"
+            v-model="categoryForm.type"
+            :options="[
+              { label: 'Thu Nhập', value: 'income' },
+              { label: 'Chi Tiêu', value: 'expense' },
+            ]"
+            required
+          />
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="showModal = false">Đóng</CButton>
-        <CButton color="primary" @click="handleSubmit">Thêm</CButton>
+        <CButton color="secondary" @click="showCategoryModal = false">
+          Đóng
+        </CButton>
+        <CButton color="primary" @click="handleCategorySubmit">
+          {{ isEditMode ? "Cập Nhật" : "Thêm" }}
+        </CButton>
       </CModalFooter>
     </CModal>
 
-    <!-- Edit Category Modal -->
-    <CModal :visible="showEditModal" @close="showEditModal = false">
+    <!-- Confirm Delete Modal -->
+    <CModal
+      backdrop="static"
+      :visible="showConfirmModal"
+      @close="showConfirmModal = false"
+    >
       <CModalHeader>
-        <CModalTitle>Sửa Danh Mục</CModalTitle>
+        <CModalTitle>Xác Nhận Xóa</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <CForm @submit.prevent="handleUpdate">
-          <div class="mb-3">
-            <CFormInput label="Tên Danh Mục" v-model="editForm.name" required />
-          </div>
-          <div class="mb-3">
-            <CFormSelect
-              label="Loại"
-              v-model="editForm.type"
-              :options="[
-                { label: 'Thu Nhập', value: 'income' },
-                { label: 'Chi Tiêu', value: 'expense' },
-              ]"
-              required
-            />
-          </div>
-        </CForm>
+        <p>Bạn có chắc chắn muốn xóa danh mục "{{ categoryToDelete.name }}"?</p>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="showEditModal = false">Đóng</CButton>
-        <CButton color="primary" @click="handleUpdate">Cập Nhật</CButton>
+        <CButton color="secondary" @click="showConfirmModal = false">
+          Hủy
+        </CButton>
+        <CButton color="danger" @click="handleDeleteConfirm">Xóa</CButton>
       </CModalFooter>
     </CModal>
   </div>
@@ -102,51 +106,67 @@ import { ref } from "vue";
 import { useStore } from "@/stores";
 
 const store = useStore();
-const showModal = ref(false);
-const showEditModal = ref(false);
+const showCategoryModal = ref(false);
+const showConfirmModal = ref(false);
+const isEditMode = ref(false);
+const categoryToDelete = ref({ id: null, name: "" });
 
-const form = ref({
+const defaultCategoryForm = {
+  id: null,
   name: "",
   type: "expense",
-});
-
-const editForm = ref({
-  id: "",
-  name: "",
-  type: "expense",
-});
-
-const handleSubmit = () => {
-  store.addCategory({
-    id: Date.now().toString(), // Convert to string
-    ...form.value,
-  });
-  showModal.value = false;
-  form.value = {
-    name: "",
-    type: "expense",
-  };
 };
 
-const handleEdit = (category) => {
-  editForm.value = { ...category };
-  showEditModal.value = true;
+const categoryForm = ref({ ...defaultCategoryForm });
+
+// Open the category modal for either add or edit
+const openCategoryModal = (category = null) => {
+  if (category) {
+    // Edit mode
+    categoryForm.value = { ...category };
+    isEditMode.value = true;
+  } else {
+    // Add mode
+    categoryForm.value = { ...defaultCategoryForm };
+    isEditMode.value = false;
+  }
+  showCategoryModal.value = true;
 };
 
-const handleUpdate = () => {
+// Handle both add and update
+const handleCategorySubmit = () => {
   try {
-    store.updateCategory(editForm.value);
-    showEditModal.value = false;
+    if (isEditMode.value) {
+      // Update existing category
+      store.updateCategory(categoryForm.value);
+    } else {
+      // Add new category
+      const newCategory = {
+        id: Date.now().toString(),
+        ...categoryForm.value,
+      };
+
+      store.addCategory(newCategory);
+    }
+
+    // Close modal and reset form
+    showCategoryModal.value = false;
+    categoryForm.value = { ...defaultCategoryForm };
+    isEditMode.value = false;
   } catch (error) {
     alert(error.message);
   }
 };
 
-const handleDelete = (id) => {
+const confirmDelete = (category) => {
+  categoryToDelete.value = category;
+  showConfirmModal.value = true;
+};
+
+const handleDeleteConfirm = () => {
   try {
-    if (confirm("Bạn có chắc chắn muốn xóa danh mục này?")) {
-      store.deleteCategory(id);
-    }
+    store.deleteCategory(categoryToDelete.value.id);
+    showConfirmModal.value = false;
   } catch (error) {
     alert(error.message);
   }

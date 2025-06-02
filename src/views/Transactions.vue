@@ -32,7 +32,7 @@
             <h5 class="mb-1">
               {{
                 transaction.type === "transfer"
-                  ? `Transfer: ${getAccountName(
+                  ? `${getAccountName(
                       transaction.fromAccount
                     )} → ${getAccountName(transaction.toAccount)}`
                   : transaction.description
@@ -117,19 +117,6 @@ const dateRange = ref({
   end: null,
 });
 
-const getDefaultCategoryId = (type) => {
-  const defaultCategory = store.categories.find((cat) => cat.type === type);
-  return defaultCategory?.id?.toString() || ""; // Ensure string
-};
-
-const getCurrentDateTime = () => {
-  const now = moment();
-  return {
-    dateInput: now.format("YYYY-MM-DD"),
-    timeInput: now.format("HH:mm"),
-  };
-};
-
 const sortedTransactions = computed(() => {
   let filtered = [...store.transactions];
 
@@ -178,7 +165,7 @@ const getTransactionDateTime = (transaction) => {
     ? formatDateTime(transaction.date)
     : `${getAccountName(transaction.accountId)} - ${getCategoryName(
         transaction.categoryId
-      )} - ${formatDateTime(transaction.date)}`;
+      )}\n${formatDateTime(transaction.date)}`;
 };
 
 const handleEdit = (transaction) => {

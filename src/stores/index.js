@@ -5,11 +5,18 @@ const store = reactive({
   accounts: [],
   categories: [],
   transactions: [],
+  defaultAccountId: null,
 
   async initialize() {
     this.accounts = storageService.getItem("accounts", []);
     this.categories = storageService.getItem("categories", []);
     this.transactions = storageService.getItem("transactions", []);
+
+    // Load default account from localStorage
+    const savedDefaultAccountId = localStorage.getItem("defaultAccountId");
+    if (savedDefaultAccountId) {
+      this.defaultAccountId = savedDefaultAccountId;
+    }
   },
 
   // Account methods
@@ -90,9 +97,6 @@ const store = reactive({
       if (!fromAccount || !toAccount) {
         throw new Error("Tài khoản không tồn tại");
       }
-      if (fromAccount.balance < transaction.amount) {
-        throw new Error("Số dư không đủ để chuyển khoản");
-      }
 
       fromAccount.balance -= transaction.amount;
       toAccount.balance += transaction.amount;
@@ -104,9 +108,6 @@ const store = reactive({
       }
 
       if (transaction.type === "expense") {
-        if (account.balance < transaction.amount) {
-          throw new Error("Số dư không đủ để chi tiêu");
-        }
         account.balance -= transaction.amount;
       } else {
         account.balance += transaction.amount;
@@ -159,9 +160,6 @@ const store = reactive({
       if (!fromAccount || !toAccount) {
         throw new Error("Tài khoản không tồn tại");
       }
-      if (fromAccount.balance < transaction.amount) {
-        throw new Error("Số dư không đủ để chuyển khoản");
-      }
 
       fromAccount.balance -= transaction.amount;
       toAccount.balance += transaction.amount;
@@ -172,9 +170,6 @@ const store = reactive({
       }
 
       if (transaction.type === "expense") {
-        if (account.balance < transaction.amount) {
-          throw new Error("Số dư không đủ để chi tiêu");
-        }
         account.balance -= transaction.amount;
       } else {
         account.balance += transaction.amount;
@@ -218,6 +213,13 @@ const store = reactive({
     this.transactions.splice(index, 1);
     storageService.setItem("transactions", this.transactions);
     storageService.setItem("accounts", this.accounts);
+  },
+
+  // Add a new action to set the default account
+  setDefaultAccount(accountId) {
+    this.defaultAccountId = accountId;
+    // Save to localStorage or your persistence layer
+    localStorage.setItem("defaultAccountId", accountId);
   },
 });
 

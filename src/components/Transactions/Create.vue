@@ -9,88 +9,69 @@
     </CModalHeader>
     <CModalBody>
       <CForm @submit.prevent="handleTransactionSubmit">
-        <div class="mb-3">
-          <CFormSelect
-            label="Loại"
-            v-model="transactionForm.type"
-            :options="[
-              { label: 'Thu Nhập', value: 'income' },
-              { label: 'Chi Tiêu', value: 'expense' },
-            ]"
-            required
-            @change="handleTypeChange"
-          />
-        </div>
-        <div class="mb-3">
-          <CFormSelect
-            label="Tài Khoản"
-            v-model="transactionForm.accountId"
-            :options="[
-              { label: 'Chọn tài khoản', value: '' },
-              ...store.accounts.map((acc) => ({
-                label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
-                value: acc.id,
-              })),
-            ]"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <CFormSelect
-            label="Danh Mục"
-            v-model="transactionForm.categoryId"
-            :options="[
-              { label: 'Chọn danh mục', value: '' },
-              ...filteredCategories.map((cat) => ({
-                label: cat.name,
-                value: cat.id.toString(),
-              })),
-            ]"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <CFormInput
-            label="Số Tiền"
-            type="number"
-            v-model.number="transactionForm.amount"
-            required
-          />
-          <div class="mt-2 d-md-none">
-            <CButton
-              class="me-2"
-              size="sm"
-              color="danger"
-              @click="backspaceAmount"
-            >
-              ⌫
-            </CButton>
-            <CButton
-              size="sm"
-              color="secondary"
-              class="me-2"
-              @click="transactionForm.amount = transactionForm.amount * 1000"
-            >
-              .000
-            </CButton>
-            <CButton
-              size="sm"
-              color="secondary"
-              class="me-2"
-              @click="transactionForm.amount = transactionForm.amount * 1000000"
-            >
-              .000.000
-            </CButton>
-          </div>
-        </div>
-        <div class="mb-3">
-          <CFormInput
-            label="Mô Tả"
-            v-model="transactionForm.description"
-            required
-          />
-        </div>
-        <div class="mb-3 d-flex">
+        <CRow class="mb-2">
+          <CCol>
+            <CFormSelect
+              label="Loại"
+              v-model="transactionForm.type"
+              :options="[
+                { label: 'Thu Nhập', value: 'income' },
+                { label: 'Chi Tiêu', value: 'expense' },
+              ]"
+              required
+              @change="handleTypeChange"
+            />
+          </CCol>
+          <CCol>
+            <CFormSelect
+              label="Tài Khoản"
+              v-model="transactionForm.accountId"
+              :options="[
+                { label: 'Chọn tài khoản', value: '' },
+                ...store.accounts.map((acc) => ({
+                  label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
+                  value: acc.id,
+                })),
+              ]"
+              required
+            />
+          </CCol>
+        </CRow>
+
+        <CRow class="mb-3">
+          <CCol>
+            <CFormSelect
+              label="Danh Mục"
+              v-model="transactionForm.categoryId"
+              :options="[
+                { label: 'Chọn danh mục', value: '' },
+                ...filteredCategories.map((cat) => ({
+                  label: cat.name,
+                  value: cat.id.toString(),
+                })),
+              ]"
+              required
+            />
+          </CCol>
+          <CCol>
+            <CFormInput
+              label="Số Tiền"
+              type="number"
+              inputmode="numeric"
+              v-model.number="transactionForm.amount"
+              required
+            />
+          </CCol>
+        </CRow>
+
+        <CFormInput
+          class="mb-3"
+          label="Mô Tả"
+          v-model="transactionForm.description"
+          required
+        />
+
+        <div class="d-flex">
           <CFormInput
             type="date"
             v-model="transactionForm.dateInput"
@@ -115,7 +96,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import { useStore } from "@/stores";
 import moment from "moment";
 
@@ -139,9 +120,23 @@ const getDefaultCategoryId = (type) => {
   return defaultCategory?.id?.toString() || "";
 };
 
+const getDefaultAccountId = () => {
+  // If there's a default account set in the store, use it
+  if (
+    store.defaultAccountId &&
+    store.accounts.find(
+      (acc) => acc.id.toString() === store.defaultAccountId.toString()
+    )
+  ) {
+    return store.defaultAccountId.toString();
+  }
+  // Otherwise fallback to the first account
+  return store.accounts[0]?.id?.toString() || "";
+};
+
 const transactionForm = ref({
   type: "expense",
-  accountId: store.accounts[0]?.id?.toString() || "",
+  accountId: getDefaultAccountId(),
   categoryId: getDefaultCategoryId("expense"),
   amount: "",
   description: "",
@@ -166,6 +161,23 @@ const handleTypeChange = () => {
     transactionForm.value.type
   );
 };
+
+// We can simplify the watch functionality to only save when explicitly changed by user
+// This avoids potential issues with the initial setup
+const userChangedAccount = ref(false);
+
+watch(
+  () => transactionForm.value.accountId,
+  (newAccountId) => {
+    if (newAccountId && userChangedAccount.value) {
+      store.setDefaultAccount(newAccountId.toString());
+    }
+    // Reset the flag after first change
+    if (!userChangedAccount.value && newAccountId) {
+      userChangedAccount.value = true;
+    }
+  }
+);
 
 const handleTransactionSubmit = async () => {
   try {
@@ -192,26 +204,27 @@ const handleTransactionSubmit = async () => {
       date: date.toISOString(),
     });
 
+    // Set the selected account as default for next transaction
+    if (transactionForm.value.accountId) {
+      store.setDefaultAccount(transactionForm.value.accountId.toString());
+    }
+
     emit("update:modelValue", false);
+    // Reset the transaction form with the current default account
     transactionForm.value = {
       type: "expense",
-      accountId: store.accounts[0]?.id.toString() || "",
+      accountId: getDefaultAccountId(), // This will get the newly set default
       categoryId: getDefaultCategoryId("expense"),
       amount: 0,
       description: "",
       ...getCurrentDateTime(),
     };
+
+    // Reset the user change flag for the next modal opening
+    userChangedAccount.value = false;
   } catch (error) {
     console.error("Error in handleTransactionSubmit:", error);
     alert(error.message);
-  }
-};
-
-const backspaceAmount = () => {
-  if (transactionForm.value.amount) {
-    const str = transactionForm.value.amount.toString();
-    transactionForm.value.amount =
-      str.length > 1 ? Number(str.slice(0, -1)) : 0;
   }
 };
 </script>

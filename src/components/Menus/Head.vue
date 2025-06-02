@@ -1,5 +1,5 @@
 <template>
-  <CNavbar expand="lg" colorScheme="light" class="bg-light">
+  <CNavbar expand="lg" colorScheme="light" class="bg-light d-none d-md-block">
     <CContainer fluid>
       <router-link class="navbar-brand" to="/">Sổ Thu Chi</router-link>
       <CNavbarToggler @click="visible = !visible" />
@@ -70,11 +70,5 @@ const visible = ref(false);
 .router-link-active {
   color: var(--cui-navbar-active-color);
   background-color: var(--cui-navbar-active-bg);
-}
-
-@media (max-width: 768px) {
-  .navbar {
-    display: none;
-  }
 }
 </style>

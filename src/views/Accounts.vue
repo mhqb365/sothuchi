@@ -2,7 +2,7 @@
   <div class="container-lg py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="mb-0">Tài Khoản</h4>
-      <CButton color="primary" @click="showModal = true">
+      <CButton color="primary" @click="openAccountModal()">
         Thêm Tài Khoản
       </CButton>
     </div>
@@ -15,13 +15,18 @@
             <div class="text-medium-emphasis">{{ account.description }}</div>
           </div>
           <div class="d-flex align-items-center">
-            <h4 class="mb-0 me-3">{{ account.balance.toLocaleString() }}đ</h4>
+            <h4
+              class="mb-0 me-3"
+              :class="{ 'text-danger': account.balance < 0 }"
+            >
+              {{ account.balance.toLocaleString() }}đ
+            </h4>
             <CButton
               color="primary"
               variant="ghost"
               size="sm"
               class="me-2"
-              @click="handleEdit(account)"
+              @click="openAccountModal(account)"
             >
               Sửa
             </CButton>
@@ -29,7 +34,7 @@
               color="danger"
               variant="ghost"
               size="sm"
-              @click="handleDelete(account.id)"
+              @click="confirmDelete(account)"
             >
               Xóa
             </CButton>
@@ -38,65 +43,77 @@
       </CCardBody>
     </CCard>
 
-    <!-- Add Account Modal -->
-    <CModal :visible="showModal" @close="showModal = false">
+    <!-- Account Modal (Add/Edit) -->
+    <CModal
+      backdrop="static"
+      :visible="showAccountModal"
+      @close="showAccountModal = false"
+    >
       <CModalHeader>
-        <CModalTitle>Thêm Tài Khoản</CModalTitle>
+        <CModalTitle>{{
+          isEditMode ? "Sửa Tài Khoản" : "Thêm Tài Khoản"
+        }}</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <CForm @submit.prevent="handleSubmit">
-          <div class="mb-3">
-            <CFormInput label="Tên Tài Khoản" v-model="form.name" required />
-          </div>
-          <div class="mb-3">
-            <CFormInput label="Mô Tả" v-model="form.description" />
-          </div>
-          <div class="mb-3">
-            <CFormInput
-              label="Số Dư Ban Đầu"
-              type="number"
-              v-model.number="form.balance"
-              required
-            />
-          </div>
+        <CForm @submit.prevent="handleAccountSubmit">
+          <CFormInput
+            class="mb-3"
+            label="Tên Tài Khoản"
+            v-model="accountForm.name"
+            required
+          />
+          <CFormInput
+            class="mb-3"
+            label="Số Dư"
+            type="number"
+            inputmode="numeric"
+            v-model.number="accountForm.balance"
+            required
+            :disabled="isEditMode"
+          />
+          <CFormInput
+            class="mb-3"
+            label="Mô Tả"
+            v-model="accountForm.description"
+          />
+
+          <CFormCheck
+            id="defaultAccountCheckbox"
+            v-model="isDefaultAccount"
+            label="Đặt làm tài khoản mặc định"
+          />
+          <small class="form-text text-muted">
+            Tài khoản mặc định sẽ được tự động chọn khi tạo giao dịch mới
+          </small>
         </CForm>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="showModal = false">Đóng</CButton>
-        <CButton color="primary" @click="handleSubmit">Thêm</CButton>
+        <CButton color="secondary" @click="showAccountModal = false">
+          Đóng
+        </CButton>
+        <CButton color="primary" @click="handleAccountSubmit">
+          {{ isEditMode ? "Cập Nhật" : "Thêm" }}
+        </CButton>
       </CModalFooter>
     </CModal>
 
-    <!-- Edit Account Modal -->
-    <CModal :visible="showEditModal" @close="showEditModal = false">
+    <!-- Confirm Delete Modal -->
+    <CModal
+      backdrop="static"
+      :visible="showConfirmModal"
+      @close="showConfirmModal = false"
+    >
       <CModalHeader>
-        <CModalTitle>Sửa Tài Khoản</CModalTitle>
+        <CModalTitle>Xác Nhận Xóa</CModalTitle>
       </CModalHeader>
       <CModalBody>
-        <CForm @submit.prevent="handleUpdate">
-          <div class="mb-3">
-            <CFormInput
-              label="Tên Tài Khoản"
-              v-model="editForm.name"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <CFormInput label="Mô Tả" v-model="editForm.description" />
-          </div>
-          <div class="mb-3">
-            <CFormInput
-              label="Số Dư"
-              type="number"
-              v-model.number="editForm.balance"
-              required
-            />
-          </div>
-        </CForm>
+        <p>Bạn có chắc chắn muốn xóa tài khoản "{{ accountToDelete.name }}"?</p>
       </CModalBody>
       <CModalFooter>
-        <CButton color="secondary" @click="showEditModal = false">Đóng</CButton>
-        <CButton color="primary" @click="handleUpdate">Cập Nhật</CButton>
+        <CButton color="secondary" @click="showConfirmModal = false">
+          Hủy
+        </CButton>
+        <CButton color="danger" @click="handleDeleteConfirm">Xóa</CButton>
       </CModalFooter>
     </CModal>
   </div>
@@ -107,54 +124,91 @@ import { ref } from "vue";
 import { useStore } from "@/stores";
 
 const store = useStore();
-const showModal = ref(false);
-const showEditModal = ref(false);
+const showAccountModal = ref(false);
+const showConfirmModal = ref(false);
+const accountToDelete = ref({ id: null, name: "" });
+const isEditMode = ref(false);
+const isDefaultAccount = ref(false);
 
-const form = ref({
-  name: "",
-  description: "",
-  balance: 0,
-});
-
-const editForm = ref({
+const defaultAccountForm = {
   id: null,
   name: "",
   description: "",
   balance: 0,
-});
-
-const handleSubmit = () => {
-  store.addAccount({
-    id: Date.now(),
-    ...form.value,
-  });
-  showModal.value = false;
-  form.value = {
-    name: "",
-    description: "",
-    balance: 0,
-  };
 };
 
-const handleEdit = (account) => {
-  editForm.value = { ...account };
-  showEditModal.value = true;
+const accountForm = ref({ ...defaultAccountForm });
+
+// Open the account modal for either add or edit
+const openAccountModal = (account = null) => {
+  if (account) {
+    // Edit mode
+    accountForm.value = { ...account };
+    isEditMode.value = true;
+    // Check if this account is the default
+    isDefaultAccount.value = store.defaultAccountId === account.id.toString();
+  } else {
+    // Add mode
+    accountForm.value = { ...defaultAccountForm };
+    isEditMode.value = false;
+    isDefaultAccount.value = false;
+  }
+  showAccountModal.value = true;
 };
 
-const handleUpdate = () => {
+// Handle both add and update
+const handleAccountSubmit = () => {
   try {
-    store.updateAccount(editForm.value);
-    showEditModal.value = false;
+    if (isEditMode.value) {
+      // Update existing account
+      store.updateAccount(accountForm.value);
+
+      // Handle default account setting
+      if (isDefaultAccount.value) {
+        store.setDefaultAccount(accountForm.value.id.toString());
+      } else if (store.defaultAccountId === accountForm.value.id.toString()) {
+        // If this was the default but checkbox is unchecked, clear default
+        store.setDefaultAccount("");
+      }
+    } else {
+      // Add new account
+      const newAccount = {
+        id: Date.now().toString(),
+        ...accountForm.value,
+      };
+
+      store.addAccount(newAccount);
+
+      // Set as default if checkbox is checked
+      if (isDefaultAccount.value) {
+        store.setDefaultAccount(newAccount.id.toString());
+      }
+    }
+
+    // Close modal and reset form
+    showAccountModal.value = false;
+    accountForm.value = { ...defaultAccountForm };
+    isEditMode.value = false;
+    isDefaultAccount.value = false;
   } catch (error) {
     alert(error.message);
   }
 };
 
-const handleDelete = (id) => {
+const confirmDelete = (account) => {
+  accountToDelete.value = account;
+  showConfirmModal.value = true;
+};
+
+const handleDeleteConfirm = () => {
   try {
-    if (confirm("Bạn có chắc chắn muốn xóa tài khoản này?")) {
-      store.deleteAccount(id);
+    // Check if this account is the default account
+    if (store.defaultAccountId === accountToDelete.value.id.toString()) {
+      store.setDefaultAccount("");
     }
+
+    store.deleteAccount(accountToDelete.value.id);
+    showConfirmModal.value = false;
   } catch (error) {
     alert(error.message);
   }

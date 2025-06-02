@@ -2,8 +2,8 @@
   <div class="container-lg py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="mb-0">Tổng Quan</h4>
-      <router-link class="btn btn-outline-primary" to="/backup">
-        SL & KP
+      <router-link class="btn btn-outline-primary d-md-none" to="/backup">
+        Sao lưu
       </router-link>
       <div class="d-flex align-items-center">
         <DateRange

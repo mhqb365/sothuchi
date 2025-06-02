@@ -1,5 +1,5 @@
 <template>
-  <div class="bottom-menu">
+  <div class="bottom-menu d-md-none">
     <router-link to="/" class="menu-item">
       <CIcon name="cil-home" />
       <span class="fw-bold">Tổng quan</span>
@@ -28,7 +28,8 @@ defineEmits(["show-create-transaction"]);
 
 <style scoped>
 .bottom-menu {
-  display: none;
+  display: flex;
+  justify-content: space-around;
   position: fixed;
   bottom: 0;
   left: 0;
@@ -118,12 +119,5 @@ defineEmits(["show-create-transaction"]);
 
 .menu-item.router-link-active i {
   transform: scale(1.1);
-}
-
-@media (max-width: 768px) {
-  .bottom-menu {
-    display: flex;
-    justify-content: space-around;
-  }
 }
 </style>

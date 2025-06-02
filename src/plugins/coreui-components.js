@@ -31,6 +31,7 @@ import {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CFormCheck,
 } from "@coreui/vue";
 
 const components = {
@@ -66,6 +67,7 @@ const components = {
   CDropdownToggle,
   CDropdownMenu,
   CDropdownItem,
+  CFormCheck,
 };
 
 export default {

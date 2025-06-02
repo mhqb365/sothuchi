@@ -5,68 +5,40 @@
     </CModalHeader>
     <CModalBody>
       <CForm @submit.prevent="handleSubmit">
-        <div class="mb-3">
-          <CFormSelect
-            label="Từ Tài Khoản"
-            v-model="form.fromAccount"
-            :options="[
-              { label: 'Chọn tài khoản', value: '' },
-              ...accounts.map((acc) => ({
-                label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
-                value: acc.id,
-              })),
-            ]"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <CFormSelect
-            label="Đến Tài Khoản"
-            v-model="form.toAccount"
-            :options="[
-              { label: 'Chọn tài khoản', value: '' },
-              ...accounts.map((acc) => ({
-                label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
-                value: acc.id,
-              })),
-            ]"
-            required
-          />
-        </div>
-        <div class="mb-3">
-          <CFormInput
-            label="Số Tiền"
-            type="number"
-            v-model.number="form.amount"
-            required
-          />
-          <div class="mt-2 d-md-none">
-            <CButton
-              class="me-2"
-              size="sm"
-              color="danger"
-              @click="backspaceAmount"
-            >
-              ⌫
-            </CButton>
-            <CButton
-              size="sm"
-              color="secondary"
-              class="me-2"
-              @click="form.amount = form.amount * 1000"
-            >
-              .000
-            </CButton>
-            <CButton
-              size="sm"
-              color="secondary"
-              class="me-2"
-              @click="form.amount = form.amount * 1000000"
-            >
-              .000.000
-            </CButton>
-          </div>
-        </div>
+        <CFormSelect
+          class="mb-3"
+          label="Từ Tài Khoản"
+          v-model="form.fromAccount"
+          :options="[
+            { label: 'Chọn tài khoản', value: '' },
+            ...accounts.map((acc) => ({
+              label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
+              value: acc.id,
+            })),
+          ]"
+          required
+        />
+        <CFormSelect
+          class="mb-3"
+          label="Đến Tài Khoản"
+          v-model="form.toAccount"
+          :options="[
+            { label: 'Chọn tài khoản', value: '' },
+            ...accounts.map((acc) => ({
+              label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
+              value: acc.id,
+            })),
+          ]"
+          required
+        />
+        <CFormInput
+          class="mb-3"
+          label="Số Tiền"
+          type="number"
+          inputmode="numeric"
+          v-model.number="form.amount"
+          required
+        />
         <div class="mb-3 d-flex">
           <CFormInput
             type="date"

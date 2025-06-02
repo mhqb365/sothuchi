@@ -8,115 +8,95 @@
     <CModalBody>
       <CForm @submit.prevent="handleSubmit">
         <template v-if="form.type !== 'transfer'">
-          <div class="mb-3">
-            <CFormSelect
-              label="Loại"
-              v-model="form.type"
-              :options="[
-                { label: 'Thu Nhập', value: 'income' },
-                { label: 'Chi Tiêu', value: 'expense' },
-              ]"
-              required
-              @change="handleTypeChange"
-            />
-          </div>
-          <div class="mb-3">
-            <CFormSelect
-              label="Tài Khoản"
-              v-model="form.accountId"
-              :options="[
-                { label: 'Chọn tài khoản', value: '' },
-                ...accounts.map((acc) => ({
-                  label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
-                  value: acc.id,
-                })),
-              ]"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <CFormSelect
-              label="Danh Mục"
-              v-model="form.categoryId"
-              :options="[
-                { label: 'Chọn danh mục', value: '' },
-                ...filteredCategories.map((cat) => ({
-                  label: cat.name,
-                  value: cat.id.toString(),
-                })),
-              ]"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <CFormInput label="Mô Tả" v-model="form.description" required />
-          </div>
-        </template>
-        <template v-else>
-          <div class="mb-3">
-            <CFormSelect
-              label="Từ Tài Khoản"
-              v-model="form.fromAccount"
-              :options="[
-                { label: 'Chọn tài khoản', value: '' },
-                ...accounts.map((acc) => ({
-                  label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
-                  value: acc.id,
-                })),
-              ]"
-              required
-            />
-          </div>
-          <div class="mb-3">
-            <CFormSelect
-              label="Đến Tài Khoản"
-              v-model="form.toAccount"
-              :options="[
-                { label: 'Chọn tài khoản', value: '' },
-                ...accounts.map((acc) => ({
-                  label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
-                  value: acc.id,
-                })),
-              ]"
-              required
-            />
-          </div>
-        </template>
-        <div class="mb-3">
+          <CRow class="mb-3">
+            <CCol>
+              <CFormSelect
+                label="Loại"
+                v-model="form.type"
+                :options="[
+                  { label: 'Thu Nhập', value: 'income' },
+                  { label: 'Chi Tiêu', value: 'expense' },
+                ]"
+                required
+                @change="handleTypeChange"
+              />
+            </CCol>
+            <CCol>
+              <CFormSelect
+                label="Tài Khoản"
+                v-model="form.accountId"
+                :options="[
+                  { label: 'Chọn tài khoản', value: '' },
+                  ...accounts.map((acc) => ({
+                    label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
+                    value: acc.id,
+                  })),
+                ]"
+                required
+              />
+            </CCol>
+          </CRow>
+          <CRow class="mb-3">
+            <CCol>
+              <CFormSelect
+                label="Danh Mục"
+                v-model="form.categoryId"
+                :options="[
+                  { label: 'Chọn danh mục', value: '' },
+                  ...filteredCategories.map((cat) => ({
+                    label: cat.name,
+                    value: cat.id.toString(),
+                  })),
+                ]"
+                required
+              />
+            </CCol>
+            <CCol>
+              <CFormInput
+                label="Số Tiền"
+                type="number"
+                inputmode="numeric"
+                v-model.number="form.amount"
+                required
+              />
+            </CCol>
+          </CRow>
+
           <CFormInput
-            label="Số Tiền"
-            type="number"
-            v-model.number="form.amount"
+            class="mb-3"
+            label="Mô Tả"
+            v-model="form.description"
             required
           />
-          <div class="mt-2 d-md-none">
-            <CButton
-              class="me-2"
-              size="sm"
-              color="danger"
-              @click="backspaceAmount"
-            >
-              ⌫
-            </CButton>
-            <CButton
-              size="sm"
-              color="secondary"
-              class="me-2"
-              @click="form.amount = form.amount * 1000"
-            >
-              .000
-            </CButton>
-            <CButton
-              size="sm"
-              color="secondary"
-              class="me-2"
-              @click="form.amount = form.amount * 1000000"
-            >
-              .000.000
-            </CButton>
-          </div>
-        </div>
-        <div class="mb-3 d-flex">
+        </template>
+        <template v-else>
+          <CFormSelect
+            label="Từ Tài Khoản"
+            v-model="form.fromAccount"
+            :options="[
+              { label: 'Chọn tài khoản', value: '' },
+              ...accounts.map((acc) => ({
+                label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
+                value: acc.id,
+              })),
+            ]"
+            required
+          />
+          <CFormSelect
+            label="Đến Tài Khoản"
+            v-model="form.toAccount"
+            :options="[
+              { label: 'Chọn tài khoản', value: '' },
+              ...accounts.map((acc) => ({
+                label: `${acc.name} (${acc.balance.toLocaleString()}đ)`,
+                value: acc.id,
+              })),
+            ]"
+            required
+          />
+        </template>
+
+        <div class="d-flex">
           <CFormInput
             type="date"
             v-model="form.dateInput"

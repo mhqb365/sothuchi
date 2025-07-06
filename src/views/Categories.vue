@@ -3,41 +3,91 @@
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h4 class="mb-0">Danh Mục</h4>
       <CButton color="primary" @click="openCategoryModal()">
-        Thêm Danh Mục</CButton
-      >
+        Thêm Danh Mục
+      </CButton>
     </div>
 
-    <CCard v-for="category in store.categories" :key="category.id" class="mb-3">
-      <CCardBody>
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="mb-1">{{ category.name }}</h5>
-            <div class="text-medium-emphasis">
-              {{ category.type === "income" ? "Thu Nhập" : "Chi Tiêu" }}
+    <!-- Danh mục chi -->
+    <div class="fw-bold fs-5 mb-2 mt-4">Danh Mục Chi</div>
+    <template v-if="expenseCategories.length">
+      <CCard
+        v-for="category in expenseCategories"
+        :key="category.id"
+        class="mb-3"
+      >
+        <CCardBody>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">{{ category.name }}</h5>
+              <div class="text-medium-emphasis">
+                {{ category.type === "income" ? "Thu Nhập" : "Chi Tiêu" }}
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <CButton
+                color="primary"
+                variant="ghost"
+                size="sm"
+                class="me-2"
+                @click="openCategoryModal(category)"
+              >
+                Sửa
+              </CButton>
+              <CButton
+                color="danger"
+                variant="ghost"
+                size="sm"
+                @click="confirmDelete(category)"
+              >
+                Xóa
+              </CButton>
             </div>
           </div>
-          <div class="d-flex align-items-center">
-            <CButton
-              color="primary"
-              variant="ghost"
-              size="sm"
-              class="me-2"
-              @click="openCategoryModal(category)"
-            >
-              Sửa
-            </CButton>
-            <CButton
-              color="danger"
-              variant="ghost"
-              size="sm"
-              @click="confirmDelete(category)"
-            >
-              Xóa
-            </CButton>
+        </CCardBody>
+      </CCard>
+    </template>
+    <div v-else class="text-medium-emphasis mb-3">Không có danh mục chi.</div>
+
+    <!-- Danh mục thu -->
+    <div class="fw-bold fs-5 mb-2 mt-4">Danh Mục Thu</div>
+    <template v-if="incomeCategories.length">
+      <CCard
+        v-for="category in incomeCategories"
+        :key="category.id"
+        class="mb-3"
+      >
+        <CCardBody>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">{{ category.name }}</h5>
+              <div class="text-medium-emphasis">
+                {{ category.type === "income" ? "Thu Nhập" : "Chi Tiêu" }}
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <CButton
+                color="primary"
+                variant="ghost"
+                size="sm"
+                class="me-2"
+                @click="openCategoryModal(category)"
+              >
+                Sửa
+              </CButton>
+              <CButton
+                color="danger"
+                variant="ghost"
+                size="sm"
+                @click="confirmDelete(category)"
+              >
+                Xóa
+              </CButton>
+            </div>
           </div>
-        </div>
-      </CCardBody>
-    </CCard>
+        </CCardBody>
+      </CCard>
+    </template>
+    <div v-else class="text-medium-emphasis mb-3">Không có danh mục thu.</div>
 
     <!-- Category Modal (Add/Edit) -->
     <CModal
@@ -102,7 +152,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "@/stores";
 
 const store = useStore();
@@ -171,4 +221,11 @@ const handleDeleteConfirm = () => {
     alert(error.message);
   }
 };
+
+const expenseCategories = computed(() =>
+  store.categories.filter((cat) => cat.type === "expense")
+);
+const incomeCategories = computed(() =>
+  store.categories.filter((cat) => cat.type === "income")
+);
 </script>

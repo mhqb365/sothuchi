@@ -21,64 +21,70 @@
       </div>
     </div>
 
-    <CCard
-      v-for="transaction in sortedTransactions"
-      :key="transaction.id"
-      class="mb-3"
-    >
-      <CCardBody>
-        <div class="d-flex justify-content-between align-items-center">
-          <div>
-            <h5 class="mb-1">
-              {{
-                transaction.type === "transfer"
-                  ? `${getAccountName(
-                      transaction.fromAccount
-                    )} → ${getAccountName(transaction.toAccount)}`
-                  : transaction.description
-              }}
-            </h5>
-            <div class="text-medium-emphasis">
-              {{ getTransactionDateTime(transaction) }}
+    <!-- Group transactions by date -->
+    <template v-for="(transactions, date) in groupedTransactions" :key="date">
+      <div class="fw-bold fs-5 mb-2 mt-4">
+        {{ formatDateHeader(date) }}
+      </div>
+      <CCard
+        v-for="transaction in transactions"
+        :key="transaction.id"
+        class="mb-3"
+      >
+        <CCardBody>
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <h5 class="mb-1">
+                {{
+                  transaction.type === "transfer"
+                    ? `${getAccountName(
+                        transaction.fromAccount
+                      )} → ${getAccountName(transaction.toAccount)}`
+                    : transaction.description
+                }}
+              </h5>
+              <div class="text-medium-emphasis">
+                {{ getTransactionDateTime(transaction) }}
+              </div>
+            </div>
+            <div class="d-flex align-items-center">
+              <h5
+                class="mb-0 me-3"
+                :class="{
+                  'text-success': transaction.type === 'income',
+                  'text-danger': transaction.type === 'expense',
+                }"
+              >
+                {{
+                  transaction.type === "income"
+                    ? "+"
+                    : transaction.type === "expense"
+                    ? "-"
+                    : ""
+                }}{{ transaction.amount.toLocaleString() }}đ
+              </h5>
+              <CButton
+                color="primary"
+                variant="ghost"
+                size="sm"
+                class="me-2"
+                @click="handleEdit(transaction)"
+              >
+                Sửa
+              </CButton>
+              <CButton
+                color="danger"
+                variant="ghost"
+                size="sm"
+                @click="handleDelete(transaction.id)"
+              >
+                Xóa
+              </CButton>
             </div>
           </div>
-          <div class="d-flex align-items-center">
-            <h5
-              class="mb-0 me-3"
-              :class="{
-                'text-success': transaction.type === 'income',
-                'text-danger': transaction.type === 'expense',
-              }"
-            >
-              {{
-                transaction.type === "income"
-                  ? "+"
-                  : transaction.type === "expense"
-                  ? "-"
-                  : ""
-              }}{{ transaction.amount.toLocaleString() }}đ
-            </h5>
-            <CButton
-              color="primary"
-              variant="ghost"
-              size="sm"
-              class="me-2"
-              @click="handleEdit(transaction)"
-            >
-              Sửa
-            </CButton>
-            <CButton
-              color="danger"
-              variant="ghost"
-              size="sm"
-              @click="handleDelete(transaction.id)"
-            >
-              Xóa
-            </CButton>
-          </div>
-        </div>
-      </CCardBody>
-    </CCard>
+        </CCardBody>
+      </CCard>
+    </template>
 
     <!-- Replace Add Transaction Modal with component -->
     <CreateTransaction v-model="showTransactionModal" />
@@ -141,6 +147,19 @@ const sortedTransactions = computed(() => {
   });
 });
 
+// Group transactions by date (YYYY-MM-DD)
+const groupedTransactions = computed(() => {
+  const groups = {};
+  sortedTransactions.value.forEach((transaction) => {
+    const dateKey = moment(transaction.date).format("YYYY-MM-DD");
+    if (!groups[dateKey]) {
+      groups[dateKey] = [];
+    }
+    groups[dateKey].push(transaction);
+  });
+  return groups;
+});
+
 const handleDateRangeChange = (range) => {
   dateRange.value = {
     start: range.start,
@@ -166,6 +185,15 @@ const getTransactionDateTime = (transaction) => {
     : `${getAccountName(transaction.accountId)} - ${getCategoryName(
         transaction.categoryId
       )}\n${formatDateTime(transaction.date)}`;
+};
+
+const formatDateHeader = (dateString) => {
+  // Hiển thị "Hôm nay", "Hôm qua" hoặc ngày định dạng DD/MM/YYYY
+  const today = moment().format("YYYY-MM-DD");
+  const yesterday = moment().subtract(1, "days").format("YYYY-MM-DD");
+  if (dateString === today) return "Hôm nay";
+  if (dateString === yesterday) return "Hôm qua";
+  return moment(dateString).format("DD/MM/YYYY");
 };
 
 const handleEdit = (transaction) => {

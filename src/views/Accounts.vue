@@ -69,7 +69,6 @@
             inputmode="numeric"
             v-model.number="accountForm.balance"
             required
-            :disabled="isEditMode"
           />
           <CFormInput
             class="mb-3"

@@ -17,6 +17,7 @@ import {
   CInputGroupText,
   CAlert,
   CCard,
+  CCardHeader,
   CCardBody,
   CModal,
   CModalTitle,
@@ -32,6 +33,7 @@ import {
   CDropdownMenu,
   CDropdownItem,
   CFormCheck,
+  CProgress,
 } from "@coreui/vue";
 
 const components = {
@@ -53,6 +55,7 @@ const components = {
   CInputGroupText,
   CAlert,
   CCard,
+  CCardHeader,
   CCardBody,
   CModal,
   CModalTitle,
@@ -68,6 +71,7 @@ const components = {
   CDropdownMenu,
   CDropdownItem,
   CFormCheck,
+  CProgress,
 };
 
 export default {

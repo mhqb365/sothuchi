@@ -2,22 +2,22 @@
   <div class="bottom-menu d-md-none">
     <router-link to="/" class="menu-item">
       <CIcon name="cil-home" />
-      <span class="fw-bold">Tổng quan</span>
+      <span class="fw-bold">Tổng Quan</span>
     </router-link>
     <router-link to="/accounts" class="menu-item">
       <CIcon name="cil-wallet" />
-      <span class="fw-bold">Tài khoản</span>
+      <span class="fw-bold">Tài Khoản</span>
     </router-link>
     <div class="menu-item add-btn" @click="$emit('show-create-transaction')">
       <CIcon name="cil-plus" size="xl" />
     </div>
     <router-link to="/transactions" class="menu-item">
       <CIcon name="cil-list" />
-      <span class="fw-bold">Giao dịch</span>
+      <span class="fw-bold">Giao Dịch</span>
     </router-link>
     <router-link to="/categories" class="menu-item">
       <CIcon name="cil-tags" />
-      <span class="fw-bold">Danh mục</span>
+      <span class="fw-bold">Danh Mục</span>
     </router-link>
   </div>
 </template>

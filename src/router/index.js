@@ -4,8 +4,8 @@ const routes = [
   {
     path: "/",
     component: () => {
-      const component = import("@/views/Dashboard.vue");
-      component.displayName = "DashboardView";
+      const component = import("@/views/Overview.vue");
+      component.displayName = "Overview";
       return component;
     },
   },

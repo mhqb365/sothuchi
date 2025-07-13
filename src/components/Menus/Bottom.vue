@@ -65,7 +65,7 @@ defineEmits(["show-create-transaction"]);
   left: 50%;
   transform: translateX(-50%) scaleX(0);
   width: 25px;
-  height: 2px;
+  height: 5px;
   background-color: #4169e1;
   transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }

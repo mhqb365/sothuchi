@@ -14,7 +14,7 @@
     </div>
 
     <!-- Tổng quan số liệu -->
-    <CRow class="my-4">
+    <CRow class="my-3">
       <CCol sm="6" lg="3">
         <CCard class="mb-3">
           <CCardBody>
@@ -94,9 +94,9 @@
     </CRow>
 
     <!-- Danh mục Chi Tiêu -->
-    <CCard class="my-4">
+    <CCard class="my-3">
       <CCardHeader>
-        <h5 class="mb-0">Chi Tiêu Theo Danh Mục</h5>
+        <h5 class="mb-0">Chi Tiêu</h5>
       </CCardHeader>
       <CCardBody>
         <template v-if="expenseCategoryStats.length > 0">
@@ -133,15 +133,15 @@
           </div>
         </template>
         <div v-else class="text-center text-medium-emphasis py-3">
-          Không có dữ liệu chi tiêu trong khoảng thời gian này
+          Không có dữ liệu
         </div>
       </CCardBody>
     </CCard>
 
     <!-- Danh mục Thu Nhập -->
-    <CCard class="my-4">
+    <CCard class="my-3">
       <CCardHeader>
-        <h5 class="mb-0">Thu Nhập Theo Danh Mục</h5>
+        <h5 class="mb-0">Thu Nhập</h5>
       </CCardHeader>
       <CCardBody>
         <template v-if="incomeCategoryStats.length > 0">
@@ -178,15 +178,15 @@
           </div>
         </template>
         <div v-else class="text-center text-medium-emphasis py-3">
-          Không có dữ liệu thu nhập trong khoảng thời gian này
+          Không có dữ liệu
         </div>
       </CCardBody>
     </CCard>
 
     <!-- Giao dịch gần đây -->
-    <CCard class="my-4">
+    <CCard class="my-3">
       <CCardHeader>
-        <h5 class="mb-0">Giao Dịch Gần Đây</h5>
+        <h5 class="mb-0">Gần Đây</h5>
       </CCardHeader>
       <CCardBody>
         <template v-if="recentTransactions.length > 0">
@@ -216,7 +216,7 @@
           </div>
         </template>
         <div v-else class="text-center text-medium-emphasis py-3">
-          Không có giao dịch nào trong khoảng thời gian này
+          Không có dữ liệu
         </div>
       </CCardBody>
     </CCard>

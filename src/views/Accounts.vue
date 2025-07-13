@@ -7,7 +7,30 @@
       </CButton>
     </div>
 
-    <CCard v-for="account in store.accounts" :key="account.id" class="mb-3">
+    <!-- Total Balance Summary -->
+    <CCard class="mb-4">
+      <CCardBody>
+        <div class="d-flex justify-content-between align-items-center">
+          <div>
+            <h6 class="mb-1 text-medium-emphasis">Tổng Số Dư</h6>
+            <h4
+              class="mb-0"
+              :class="{
+                'text-danger': totalBalance < 0,
+                'text-success': totalBalance > 0,
+              }"
+            >
+              {{ totalBalance.toLocaleString() }}đ
+            </h4>
+          </div>
+          <div class="text-medium-emphasis">
+            {{ store.accounts.length }} tài khoản
+          </div>
+        </div>
+      </CCardBody>
+    </CCard>
+
+    <CCard v-for="account in store.accounts" :key="account.id" class="my-3">
       <CCardBody>
         <div class="d-flex justify-content-between align-items-center">
           <div>
@@ -119,7 +142,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import { useStore } from "@/stores";
 
 const store = useStore();
@@ -128,6 +151,11 @@ const showConfirmModal = ref(false);
 const accountToDelete = ref({ id: null, name: "" });
 const isEditMode = ref(false);
 const isDefaultAccount = ref(false);
+
+// Computed property for total balance
+const totalBalance = computed(() => {
+  return store.accounts.reduce((total, account) => total + account.balance, 0);
+});
 
 const defaultAccountForm = {
   id: null,

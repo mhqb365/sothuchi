@@ -4,7 +4,7 @@
       <h4 class="mb-0">Sao Lưu & Khôi Phục</h4>
     </div>
 
-    <CCard class="mb-3">
+    <CCard class="my-3">
       <CCardBody>
         <h5 class="mb-3">Xuất Dữ Liệu</h5>
         <p class="text-medium-emphasis">
@@ -14,7 +14,7 @@
       </CCardBody>
     </CCard>
 
-    <CCard>
+    <CCard class="my-3">
       <CCardBody>
         <h5 class="mb-3">Nhập Dữ Liệu</h5>
         <p class="text-medium-emphasis">
@@ -29,9 +29,13 @@
             ref="fileInput"
           />
         </div>
-        <CButton color="primary" :disabled="!selectedFile" @click="handleImport"
-          >Nhập Dữ Liệu</CButton
+        <CButton
+          color="primary"
+          :disabled="!selectedFile"
+          @click="handleImport"
         >
+          Nhập Dữ Liệu
+        </CButton>
       </CCardBody>
     </CCard>
   </div>

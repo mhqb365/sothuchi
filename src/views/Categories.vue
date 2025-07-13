@@ -8,12 +8,12 @@
     </div>
 
     <!-- Danh mục chi -->
-    <div class="fw-bold fs-5 mb-2 mt-4">Danh Mục Chi</div>
+    <div class="fw-bold fs-6">Danh Mục Chi</div>
     <template v-if="expenseCategories.length">
       <CCard
         v-for="category in expenseCategories"
         :key="category.id"
-        class="mb-3"
+        class="my-3"
       >
         <CCardBody>
           <div class="d-flex justify-content-between align-items-center">
@@ -49,12 +49,12 @@
     <div v-else class="text-medium-emphasis mb-3">Không có danh mục chi.</div>
 
     <!-- Danh mục thu -->
-    <div class="fw-bold fs-5 mb-2 mt-4">Danh Mục Thu</div>
+    <div class="fw-bold fs-6 mb-2 mt-4">Danh Mục Thu</div>
     <template v-if="incomeCategories.length">
       <CCard
         v-for="category in incomeCategories"
         :key="category.id"
-        class="mb-3"
+        class="my-3"
       >
         <CCardBody>
           <div class="d-flex justify-content-between align-items-center">

@@ -23,13 +23,13 @@
 
     <!-- Group transactions by date -->
     <template v-for="(transactions, date) in groupedTransactions" :key="date">
-      <div class="fw-bold fs-5 mb-2 mt-4">
+      <div class="fw-bold fs-6 text-primary">
         {{ formatDateHeader(date) }}
       </div>
       <CCard
         v-for="transaction in transactions"
         :key="transaction.id"
-        class="mb-3"
+        class="my-3"
       >
         <CCardBody>
           <div class="d-flex justify-content-between align-items-center">
@@ -43,7 +43,7 @@
                     : transaction.description
                 }}
               </h5>
-              <div class="text-medium-emphasis">
+              <div class="text-muted">
                 {{ getTransactionDateTime(transaction) }}
               </div>
             </div>

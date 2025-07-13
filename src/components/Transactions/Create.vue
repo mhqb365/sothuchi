@@ -146,7 +146,7 @@ const transactionForm = ref({
 const filteredCategories = computed(() => {
   const filtered = store.categories.filter(
     (cat) => cat.type === transactionForm.value.type
-  );
+  ).sort((a, b) => a.name.localeCompare(b.name));
   if (
     filtered.length > 0 &&
     !filtered.find((cat) => cat.id === transactionForm.value.categoryId)

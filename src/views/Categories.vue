@@ -223,9 +223,13 @@ const handleDeleteConfirm = () => {
 };
 
 const expenseCategories = computed(() =>
-  store.categories.filter((cat) => cat.type === "expense")
+  store.categories
+    .filter((cat) => cat.type === "expense")
+    .sort((a, b) => a.name.localeCompare(b.name))
 );
 const incomeCategories = computed(() =>
-  store.categories.filter((cat) => cat.type === "income")
+  store.categories
+    .filter((cat) => cat.type === "income")
+    .sort((a, b) => a.name.localeCompare(b.name))
 );
 </script>

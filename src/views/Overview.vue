@@ -15,7 +15,7 @@
 
     <!-- Tổng quan số liệu -->
     <CRow class="my-3">
-      <CCol sm="6" lg="3">
+      <CCol sm="6" lg="4">
         <CCard class="mb-3">
           <CCardBody>
             <div class="d-flex justify-content-between align-items-center">
@@ -32,7 +32,7 @@
           </CCardBody>
         </CCard>
       </CCol>
-      <CCol sm="6" lg="3">
+      <CCol sm="6" lg="4">
         <CCard class="mb-3">
           <CCardBody>
             <div class="d-flex justify-content-between align-items-center">
@@ -49,34 +49,7 @@
           </CCardBody>
         </CCard>
       </CCol>
-      <CCol sm="6" lg="3">
-        <CCard class="mb-3">
-          <CCardBody>
-            <div class="d-flex justify-content-between align-items-center">
-              <div>
-                <div class="text-medium-emphasis">Số Dư Ròng</div>
-                <h4
-                  class="mb-0"
-                  :class="{
-                    'text-success': netBalance >= 0,
-                    'text-danger': netBalance < 0,
-                  }"
-                >
-                  {{ netBalance >= 0 ? "+" : ""
-                  }}{{ netBalance.toLocaleString() }}đ
-                </h4>
-              </div>
-              <div :class="netBalance >= 0 ? 'text-success' : 'text-danger'">
-                <CIcon
-                  :icon="netBalance >= 0 ? 'cilCheck' : 'cilX'"
-                  size="xl"
-                />
-              </div>
-            </div>
-          </CCardBody>
-        </CCard>
-      </CCol>
-      <CCol sm="6" lg="3">
+      <CCol sm="6" lg="4">
         <CCard class="mb-3">
           <CCardBody>
             <div class="d-flex justify-content-between align-items-center">

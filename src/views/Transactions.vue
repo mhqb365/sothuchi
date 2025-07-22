@@ -1,7 +1,7 @@
 <template>
   <div class="container-lg py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <!-- <h4 class="mb-0">Giao Dịch</h4> -->
+      <h4 class="mb-0">Giao Dịch</h4>
       <div class="d-flex align-items-center">
         <DateRange
           class="me-2"
@@ -32,9 +32,9 @@
         >
           Thêm Giao Dịch
         </CButton>
-        <CButton color="success" @click="showTransferModal = true">
+        <!-- <CButton color="success" @click="showTransferModal = true">
           Chuyển Khoản
-        </CButton>
+        </CButton> -->
       </div>
     </div>
 

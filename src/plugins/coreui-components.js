@@ -4,6 +4,7 @@ import {
   CNavbarBrand,
   CNavbarToggler,
   CCollapse,
+  CNav,
   CNavbarNav,
   CNavItem,
   CNavLink,
@@ -34,6 +35,8 @@ import {
   CDropdownItem,
   CFormCheck,
   CProgress,
+  CTabContent,
+  CTabPane,
 } from "@coreui/vue";
 
 const components = {
@@ -43,6 +46,7 @@ const components = {
   CNavbarToggler,
   CCollapse,
   CNavbarNav,
+  CNav,
   CNavItem,
   CNavLink,
   CButton,
@@ -72,6 +76,8 @@ const components = {
   CDropdownItem,
   CFormCheck,
   CProgress,
+  CTabContent,
+  CTabPane,
 };
 
 export default {

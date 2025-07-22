@@ -76,7 +76,8 @@
           <div
             v-for="category in expenseCategoryStats"
             :key="category.id"
-            class="d-flex justify-content-between align-items-center mb-3"
+            class="d-flex justify-content-between align-items-center mb-3 cursor-pointer category-item"
+            @click="navigateToTransactionsByCategory(category.id)"
           >
             <div class="flex-grow-1">
               <div
@@ -121,7 +122,8 @@
           <div
             v-for="category in incomeCategoryStats"
             :key="category.id"
-            class="d-flex justify-content-between align-items-center mb-3"
+            class="d-flex justify-content-between align-items-center mb-3 cursor-pointer category-item"
+            @click="navigateToTransactionsByCategory(category.id)"
           >
             <div class="flex-grow-1">
               <div
@@ -199,10 +201,12 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "@/stores";
+import { useRouter } from "vue-router";
 import DateRange from "@/components/DateRange.vue";
 import moment from "moment";
 
 const store = useStore();
+const router = useRouter();
 const dateRange = ref({
   start: null,
   end: null,
@@ -343,10 +347,33 @@ const getAccountName = (id) => {
 const formatDateTime = (dateString) => {
   return moment(dateString).format("DD/MM/YYYY HH:mm");
 };
+
+// Navigate to transactions with category filter
+const navigateToTransactionsByCategory = (categoryId) => {
+  router.push({
+    path: "/transactions",
+    query: { category: categoryId },
+  });
+};
 </script>
 
 <style scoped>
 .border-bottom:last-child {
   border-bottom: none !important;
+}
+
+.category-item {
+  transition: background-color 0.2s ease;
+  border-radius: 8px;
+  padding: 8px;
+  margin: -8px;
+}
+
+.category-item:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.cursor-pointer {
+  cursor: pointer;
 }
 </style>

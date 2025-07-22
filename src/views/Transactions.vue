@@ -1,13 +1,30 @@
 <template>
   <div class="container-lg py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
-      <h4 class="mb-0">Giao Dịch</h4>
+      <!-- <h4 class="mb-0">Giao Dịch</h4> -->
       <div class="d-flex align-items-center">
         <DateRange
           class="me-2"
           @range-selected="handleDateRangeChange"
           defaultValue="thisMonth"
         />
+        <CDropdown class="me-2">
+          <CDropdownToggle color="light">
+            {{ selectedCategoryLabel }}
+          </CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem @click="selectCategory(null)">
+              Tất cả
+            </CDropdownItem>
+            <CDropdownItem
+              v-for="category in store.categories"
+              :key="category.id"
+              @click="selectCategory(category.id)"
+            >
+              {{ category.name }}
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
         <CButton
           color="primary"
           class="me-2 d-none d-md-block"
@@ -44,6 +61,7 @@
                 }}
               </h5>
               <div class="text-muted">
+                {{ formatDateTime(transaction.date) }}<br />
                 {{ getTransactionDateTime(transaction) }}
               </div>
             </div>
@@ -105,8 +123,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useStore } from "@/stores";
+import { useRoute } from "vue-router";
 import DateRange from "@/components/DateRange.vue";
 import CreateTransaction from "@/components/Transactions/Create.vue";
 import EditTransaction from "@/components/Transactions/Edit.vue";
@@ -114,10 +133,12 @@ import Transfer from "@/components/Transactions/Transfer.vue";
 import moment from "moment";
 
 const store = useStore();
+const route = useRoute();
 const showTransactionModal = ref(false);
 const showTransferModal = ref(false);
 const showEditModal = ref(false);
 const selectedTransaction = ref(null);
+const selectedCategoryId = ref(null);
 const dateRange = ref({
   start: null,
   end: null,
@@ -133,6 +154,17 @@ const sortedTransactions = computed(() => {
       return (
         transactionDate >= dateRange.value.start &&
         transactionDate <= dateRange.value.end
+      );
+    });
+  }
+
+  // Apply category filter
+  if (selectedCategoryId.value !== null) {
+    filtered = filtered.filter((transaction) => {
+      // Exclude transfer transactions when filtering by category
+      return (
+        transaction.type !== "transfer" &&
+        transaction.categoryId === selectedCategoryId.value
       );
     });
   }
@@ -167,6 +199,56 @@ const handleDateRangeChange = (range) => {
   };
 };
 
+const selectCategory = (categoryId) => {
+  selectedCategoryId.value = categoryId;
+};
+
+// Initialize category from query parameter
+onMounted(() => {
+  const categoryIdFromQuery = route.query.category;
+  if (categoryIdFromQuery) {
+    // Keep as string since store.categories IDs are strings
+    const categoryId = categoryIdFromQuery.toString();
+    // Verify the category exists in the store
+    const categoryExists = store.categories.find(
+      (cat) => cat.id === categoryId
+    );
+    if (categoryExists) {
+      selectedCategoryId.value = categoryId;
+    }
+  }
+});
+
+// Watch for route query changes (when navigating from Overview)
+watch(
+  () => route.query.category,
+  (newCategoryId) => {
+    if (newCategoryId) {
+      // Keep as string since store.categories IDs are strings
+      const categoryId = newCategoryId.toString();
+      const categoryExists = store.categories.find(
+        (cat) => cat.id === categoryId
+      );
+      if (categoryExists) {
+        selectedCategoryId.value = categoryId;
+      }
+    } else {
+      selectedCategoryId.value = null;
+    }
+  },
+  { immediate: true }
+);
+
+const selectedCategoryLabel = computed(() => {
+  if (selectedCategoryId.value === null) {
+    return "Tất cả";
+  }
+  const category = store.categories.find(
+    (cat) => cat.id === selectedCategoryId.value
+  );
+  return category ? category.name : "Tất cả";
+});
+
 const getAccountName = (id) => {
   return store.accounts.find((acc) => acc.id === id)?.name || "";
 };
@@ -176,7 +258,7 @@ const getCategoryName = (id) => {
 };
 
 const formatDateTime = (dateString) => {
-  return moment(dateString).format("DD/MM/YYYY HH:mm");
+  return moment(dateString).format("HH:mm");
 };
 
 const getTransactionDateTime = (transaction) => {
@@ -184,7 +266,7 @@ const getTransactionDateTime = (transaction) => {
     ? formatDateTime(transaction.date)
     : `${getAccountName(transaction.accountId)} - ${getCategoryName(
         transaction.categoryId
-      )}\n${formatDateTime(transaction.date)}`;
+      )}`;
 };
 
 const formatDateHeader = (dateString) => {

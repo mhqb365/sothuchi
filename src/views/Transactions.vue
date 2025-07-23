@@ -1,20 +1,23 @@
 <template>
   <div class="container-lg py-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-2">
       <h4 class="mb-0">Giao Dịch</h4>
-      <div class="d-flex align-items-center">
-        <DateRange
-          class="me-2"
-          @range-selected="handleDateRangeChange"
-          defaultValue="thisMonth"
-        />
-        <CDropdown class="me-2">
+      <DateRange
+        @range-selected="handleDateRangeChange"
+        defaultValue="thisMonth"
+      />
+    </div>
+
+    <!-- Filter Controls -->
+    <div class="mb-4 d-flex justify-content-end">
+      <div class="d-flex flex-wrap gap-2">
+        <CDropdown>
           <CDropdownToggle color="light">
             {{ selectedCategoryLabel }}
           </CDropdownToggle>
           <CDropdownMenu>
             <CDropdownItem @click="selectCategory(null)">
-              Tất cả
+              Tất cả d.mục
             </CDropdownItem>
             <CDropdownItem
               v-for="category in store.categories"
@@ -25,16 +28,23 @@
             </CDropdownItem>
           </CDropdownMenu>
         </CDropdown>
-        <CButton
-          color="primary"
-          class="me-2 d-none d-md-block"
-          @click="showTransactionModal = true"
-        >
-          Thêm Giao Dịch
-        </CButton>
-        <!-- <CButton color="success" @click="showTransferModal = true">
-          Chuyển Khoản
-        </CButton> -->
+        <CDropdown>
+          <CDropdownToggle color="light">
+            {{ selectedAccountLabel }}
+          </CDropdownToggle>
+          <CDropdownMenu>
+            <CDropdownItem @click="selectAccount(null)">
+              Tất cả TK
+            </CDropdownItem>
+            <CDropdownItem
+              v-for="account in store.accounts"
+              :key="account.id"
+              @click="selectAccount(account.id)"
+            >
+              {{ account.name }}
+            </CDropdownItem>
+          </CDropdownMenu>
+        </CDropdown>
       </div>
     </div>
 
@@ -139,6 +149,7 @@ const showTransferModal = ref(false);
 const showEditModal = ref(false);
 const selectedTransaction = ref(null);
 const selectedCategoryId = ref(null);
+const selectedAccountId = ref(null);
 const dateRange = ref({
   start: null,
   end: null,
@@ -165,6 +176,17 @@ const sortedTransactions = computed(() => {
       return (
         transaction.type !== "transfer" &&
         transaction.categoryId === selectedCategoryId.value
+      );
+    });
+  }
+
+  // Apply account filter
+  if (selectedAccountId.value !== null) {
+    filtered = filtered.filter((transaction) => {
+      // Exclude transfer transactions when filtering by account
+      return (
+        transaction.type !== "transfer" &&
+        transaction.accountId === selectedAccountId.value
       );
     });
   }
@@ -203,7 +225,11 @@ const selectCategory = (categoryId) => {
   selectedCategoryId.value = categoryId;
 };
 
-// Initialize category from query parameter
+const selectAccount = (accountId) => {
+  selectedAccountId.value = accountId;
+};
+
+// Initialize category and account from query parameters
 onMounted(() => {
   const categoryIdFromQuery = route.query.category;
   if (categoryIdFromQuery) {
@@ -215,6 +241,17 @@ onMounted(() => {
     );
     if (categoryExists) {
       selectedCategoryId.value = categoryId;
+    }
+  }
+
+  const accountIdFromQuery = route.query.account;
+  if (accountIdFromQuery) {
+    // Keep as string since store.accounts IDs are strings
+    const accountId = accountIdFromQuery.toString();
+    // Verify the account exists in the store
+    const accountExists = store.accounts.find((acc) => acc.id === accountId);
+    if (accountExists) {
+      selectedAccountId.value = accountId;
     }
   }
 });
@@ -239,14 +276,42 @@ watch(
   { immediate: true }
 );
 
+// Watch for account query changes
+watch(
+  () => route.query.account,
+  (newAccountId) => {
+    if (newAccountId) {
+      // Keep as string since store.accounts IDs are strings
+      const accountId = newAccountId.toString();
+      const accountExists = store.accounts.find((acc) => acc.id === accountId);
+      if (accountExists) {
+        selectedAccountId.value = accountId;
+      }
+    } else {
+      selectedAccountId.value = null;
+    }
+  },
+  { immediate: true }
+);
+
 const selectedCategoryLabel = computed(() => {
   if (selectedCategoryId.value === null) {
-    return "Tất cả";
+    return "Tất cả d.mục";
   }
   const category = store.categories.find(
     (cat) => cat.id === selectedCategoryId.value
   );
-  return category ? category.name : "Tất cả";
+  return category ? category.name : "Tất cả d.mục";
+});
+
+const selectedAccountLabel = computed(() => {
+  if (selectedAccountId.value === null) {
+    return "Tất cả t.khoản ";
+  }
+  const account = store.accounts.find(
+    (acc) => acc.id === selectedAccountId.value
+  );
+  return account ? account.name : "Tất cả t.khoản";
 });
 
 const getAccountName = (id) => {

@@ -30,7 +30,12 @@
       </CCardBody>
     </CCard>
 
-    <CCard v-for="account in store.accounts" :key="account.id" class="my-3">
+    <CCard
+      v-for="account in store.accounts"
+      :key="account.id"
+      class="my-3 cursor-pointer account-item"
+      @click="viewAccountTransactions(account.id)"
+    >
       <CCardBody>
         <div class="d-flex justify-content-between align-items-center">
           <div>
@@ -49,7 +54,7 @@
               variant="ghost"
               size="sm"
               class="me-2"
-              @click="openAccountModal(account)"
+              @click.stop="openAccountModal(account)"
             >
               Sửa
             </CButton>
@@ -57,7 +62,7 @@
               color="danger"
               variant="ghost"
               size="sm"
-              @click="confirmDelete(account)"
+              @click.stop="confirmDelete(account)"
             >
               Xóa
             </CButton>
@@ -144,8 +149,10 @@
 <script setup>
 import { ref, computed } from "vue";
 import { useStore } from "@/stores";
+import { useRouter } from "vue-router";
 
 const store = useStore();
+const router = useRouter();
 const showAccountModal = ref(false);
 const showConfirmModal = ref(false);
 const accountToDelete = ref({ id: null, name: "" });
@@ -240,4 +247,28 @@ const handleDeleteConfirm = () => {
     alert(error.message);
   }
 };
+
+// Navigate to transactions page with account filter
+const viewAccountTransactions = (accountId) => {
+  router.push({
+    path: "/transactions",
+    query: { account: accountId },
+  });
+};
 </script>
+
+<style scoped>
+.account-item {
+  transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.account-item:hover {
+  background-color: rgba(0, 0, 0, 0.02);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cursor-pointer {
+  cursor: pointer;
+}
+</style>

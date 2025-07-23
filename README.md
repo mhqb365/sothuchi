@@ -7,7 +7,6 @@ Web app quản lý tài chính cá nhân được xây dựng bằng Vue 3 và C
 
 ## Chức năng
 
-- Offline 100%
 - Dùng Local storage để lưu dữ liệu
 - Theo dõi thu chi
 - Quản lý danh mục thu chi

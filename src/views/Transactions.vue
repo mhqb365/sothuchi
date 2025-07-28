@@ -17,7 +17,7 @@
           </CDropdownToggle>
           <CDropdownMenu>
             <CDropdownItem @click="selectCategory(null)">
-              Tất cả d.mục
+              Tất cả danh mục
             </CDropdownItem>
             <CDropdownItem
               v-for="category in store.categories"
@@ -34,7 +34,7 @@
           </CDropdownToggle>
           <CDropdownMenu>
             <CDropdownItem @click="selectAccount(null)">
-              Tất cả TK
+              Tất cả tài khoản
             </CDropdownItem>
             <CDropdownItem
               v-for="account in store.accounts"
@@ -183,11 +183,15 @@ const sortedTransactions = computed(() => {
   // Apply account filter
   if (selectedAccountId.value !== null) {
     filtered = filtered.filter((transaction) => {
-      // Exclude transfer transactions when filtering by account
-      return (
-        transaction.type !== "transfer" &&
-        transaction.accountId === selectedAccountId.value
-      );
+      // Include transfer transactions that involve the selected account
+      if (transaction.type === "transfer") {
+        return (
+          transaction.fromAccount === selectedAccountId.value ||
+          transaction.toAccount === selectedAccountId.value
+        );
+      }
+      // Include regular transactions from the selected account
+      return transaction.accountId === selectedAccountId.value;
     });
   }
 
@@ -328,7 +332,7 @@ const formatDateTime = (dateString) => {
 
 const getTransactionDateTime = (transaction) => {
   return transaction.type === "transfer"
-    ? formatDateTime(transaction.date)
+    ? ""
     : `${getAccountName(transaction.accountId)} - ${getCategoryName(
         transaction.categoryId
       )}`;
